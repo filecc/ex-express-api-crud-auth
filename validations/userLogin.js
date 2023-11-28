@@ -20,14 +20,14 @@ module.exports = {
     },
     custom: {
         options: async (value) => {
-            const isAlreadyRegister = await prisma.user.findFirst({
+            const isRegistered = await prisma.user.findFirst({
                 where: {
                     email: value
                 }
             })
             
-            if(isAlreadyRegister){
-                throw new Error(`User already exist. Please choose another email.`)
+            if(!isRegistered){
+                throw new Error(`Incorrect email.`)
             }
             return true
         }
@@ -49,6 +49,7 @@ module.exports = {
     },
     isString: {
         errorMessage: "Name must be a string.",
-    },
+        bail: true
+    }
   },
 };
