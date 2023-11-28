@@ -81,7 +81,7 @@ async function login(req, res, next){
 
     res.cookie('pl-token', token, {
         expires: new Date(Date.now() + 3600000)
-    }).redirect('/user/profile')
+    }).redirect(FRONT + '/user/profile')
 }
 
 module.exports = {

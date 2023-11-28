@@ -7,7 +7,7 @@ const express = require("express");
  */
 function isUserAuthenticated(req, res, next){
     // get cookie from request
-    const token = req.headers['authorization']?.split(' ')[1];
+    const token = req.headers['authorization']?.split(' ')[1] || req.cookies['pl-token'];
     
     if(!token){
         throw new CustomError('No active session or token found. Login First.', 401)
