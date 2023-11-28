@@ -10,7 +10,7 @@ const homeController = require('./controllers/home')
 const apiRouter = require('./routers/api')
 const notfound = require('./middleware/notfound')
 const errorMiddleware = require('./middleware/errors')
-
+const userRouter = require('./routers/user')
 
 app.get('/favicon.ico', (req, res) => res.status(204))
 
@@ -24,6 +24,7 @@ app.get('/', homeController.index)
 
 
 app.use('/api', apiRouter)
+app.use('/user', userRouter)
 
 app.use(notfound)
 app.use(errorMiddleware)

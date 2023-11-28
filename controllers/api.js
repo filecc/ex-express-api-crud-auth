@@ -352,10 +352,17 @@ async function edit(req, res, next){
   })
 }
 
+async function register(req, res, next){
+  res.json({
+    ciao: 'registrati'
+  })
+}
+
 module.exports = {
   index,
   show,
   store,
   destroy,
-  edit
+  edit,
+  register
 };
