@@ -1,11 +1,9 @@
 const jwt = require('jsonwebtoken')
 const CustomError = require('../lib/CustomError')
-
+const express = require("express");
 /**
- * 
- * @param {req.ExpressRequest} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {express.Request} req
+ * @param {express.Response} res
  */
 function isUserAuthenticated(req, res, next){
     // get cookie from request

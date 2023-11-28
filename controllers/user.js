@@ -6,6 +6,8 @@ const User = require("../lib/User");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const comparePassword = require("../lib/passwordHash").comparePassword;
+const dotenv = require('dotenv').config()
+const FRONT = process.env.FRONTURL
 /**
  * @param {express.Request} req
  * @param {express.Response} res
@@ -42,6 +44,10 @@ async function register(req, res, next) {
   });
 }
 
+/**
+ * @param {express.Request} req
+ * @param {express.Response} res
+ */
 async function login(req, res, next){
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
@@ -73,10 +79,9 @@ async function login(req, res, next){
       expiresIn: "1h"
     })
 
-    res.json({
-        message: `Welcome, ${user.email}`,
-        token: token
-    })
+    res.cookie('pl-token', token, {
+        expires: new Date(Date.now() + 3600000)
+    }).redirect('/user/profile')
 }
 
 module.exports = {
