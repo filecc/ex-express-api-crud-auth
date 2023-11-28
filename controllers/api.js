@@ -1,7 +1,5 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const env = require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const Post = require("../lib/Post");
 const generateJWT = require("../lib/generateJWT");
 const {PrismaClient} = require("@prisma/client");
@@ -13,6 +11,7 @@ const { validationResult } = require("express-validator");
 
 
 const port = process.env.PORT ?? "";
+// @ts-ignore
 const host = process.env.HOST.includes("localhost")
   ? "localhost"
   : "https://" + process.env.HOST + "/";
@@ -149,7 +148,10 @@ async function store (req, res, next) {
     return
   }
   const data = req.body 
+  const token = req.cookies['pl-token']
   
+  // @ts-ignore
+  const { id } = jwt.decode(token)
   let imageSlug;
 
   const slug = await slugGenerator(data.title)
@@ -158,12 +160,15 @@ async function store (req, res, next) {
     data.title, 
     slug,
     data.content,
-    published = data.published === "true" ? true : false,
+    data.published === "true" ? true : false,
     imageSlug ?? '/placeholder.webp',
     parseInt(data.category),
-    data.tags
+    data.tags,
+    id
     )
 
+  
+   
     try {
       prisma.post.create({
         data: {
@@ -173,6 +178,7 @@ async function store (req, res, next) {
           image: newPost.image,
           slug: newPost.slug,
           categoryId: newPost.category,
+          postedById: newPost.postedById,
           tags: {
             connectOrCreate: newPost.tags.map((tag) => {
               return {
@@ -203,7 +209,11 @@ async function store (req, res, next) {
             }
           }
         })
-        postCreated.tags = postCreated.tags.map((tag) => tag.name)
+        if(postCreated && postCreated.tags){
+          // @ts-ignore
+          postCreated.tags = postCreated.tags.map((tag) => tag.name)
+        }
+        
         res.json(postCreated)
       })
       .catch((error) => {
@@ -288,16 +298,23 @@ async function edit(req, res, next){
     }
   })
 
+  // @ts-ignore
   const oldTags = oldPost.tags.map((tag) => tag.name)
 
+  // @ts-ignore
   const newSlug = title ? await slugGenerator(title) : oldPost.slug
 
   const editedPost = new Post(
+    // @ts-ignore
     title ?? oldPost.title, 
     newSlug,
+    // @ts-ignore
     content ?? oldPost.content, 
+    // @ts-ignore
     published ?? oldPost.published,
+    // @ts-ignore
     image ?? oldPost.image,
+    // @ts-ignore
     category ?? oldPost.categoryId,
     tags ?? oldTags
     )
@@ -342,6 +359,7 @@ async function edit(req, res, next){
         tags: true
       }
     })
+    // @ts-ignore
     postEdited.tags = postEdited.tags.map((tag) => tag.name)
     res.json(postEdited)
     return
