@@ -8,9 +8,9 @@ const postCreate = require("../validations/postCreate");
 const postEdit = require("../validations/postEdit");
 const postDelete = require("../validations/postDelete");
 
-const authMulterCreateMiddlware = [authMiddleware, multer({dest: "public/images"}).single("image"), checkSchema(postCreate)]
-const authMulterEditMiddleware = [authMiddleware, multer().none(), checkSchema(postEdit)]
-const authMulterDeleteMiddleware = [authMiddleware, multer().none(), checkSchema(postDelete)]
+const authMulterCreateMiddlware = [multer({dest: "public/images"}).single("image"), authMiddleware, checkSchema(postCreate)]
+const authMulterEditMiddleware = [multer().none(), authMiddleware, checkSchema(postEdit)]
+const authMulterDeleteMiddleware = [multer().none(), authMiddleware, checkSchema(postDelete)]
 
 router.get("/posts", apiController.index)
 router.post("/post", authMulterCreateMiddlware, apiController.store)

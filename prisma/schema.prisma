@@ -21,6 +21,8 @@ model Post {
   updatedAt  DateTime @default(now()) @updatedAt
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
+  postedBy   User     @relation(fields: [postedById], references: [id])
+  postedById String
   tags       Tag[]
 }
 
@@ -50,4 +52,5 @@ model User {
   role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
+  posts     Post[]
 }
