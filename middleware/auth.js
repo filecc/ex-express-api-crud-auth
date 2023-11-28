@@ -16,8 +16,6 @@ function isUserAuthenticated(req, res, next){
     }
   
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-        /* const newToken = jwt.sign({name: 'filecc'}, process.env.JWT_SECRET, {expiresIn: '80h'}) */
-        /* const email = decodedToken.email */
         const decodedTokenFromUser= jwt.decode(token)
         if(!decodedTokenFromUser){
             throw new CustomError(`No active session or token found. Login First.`, 401)
