@@ -5,6 +5,7 @@ const CustomErrorValidation = require("../lib/CustomError");
 const User = require("../lib/User");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const comparePassword = require("../lib/passwordHash").comparePassword;
 /**
  * @param {express.Request} req
  * @param {express.Response} res
@@ -33,13 +34,51 @@ async function register(req, res, next) {
     data: user
   })
 
-  res.json(addedUser);
+  res.json({
+    message: "User added",
+    name: user.name,
+    email: user.email,
+    role: user.role
+  });
 }
 
 async function login(req, res, next){
-    
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+      next(new CustomErrorValidation("Some errors", 500, validation.array()));
+      return;
+    }
+
+    const { email, password } = req.body;
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email
+      }
+    })
+    if(!user){
+      next(new CustomErrorValidation("Wrong credentials", 401));
+      return;
+    }
+
+    const passwordMatch = await comparePassword(password, user.password)
+    if(!passwordMatch){
+      next(new CustomErrorValidation("Wrong credentials", 401));
+      return;
+    }
+    const token = jwt.sign({
+      id: user.id,
+      role: user.role
+    }, process.env.JWT_SECRET, {
+      expiresIn: "1h"
+    })
+
+    res.json({
+        message: `Welcome, ${user.email}`,
+        token: token
+    })
 }
 
 module.exports = {
   register,
+  login
 };

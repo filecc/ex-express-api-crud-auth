@@ -3,10 +3,14 @@ const router = express.Router()
 const multer = require("multer")
 const { checkSchema } = require("express-validator");
 const userController = require("../controllers/user")
-const userRegister = require("../validations/userRegister")
+const userRegister = require("../validations/userRegister");
+const userLogin = require("../validations/userLogin");
 
-const doubleMiddleware = [multer().none(), checkSchema(userRegister)]
-router.post("/register", doubleMiddleware, userController.register)
+const doubleMiddlewareRegister = [multer().none(), checkSchema(userRegister)]
+const doubleMiddlewareLogin = [multer().none(), checkSchema(userLogin)]
+
+router.post("/register", doubleMiddlewareRegister, userController.register)
+router.post("/login", doubleMiddlewareLogin, userController.login)
 
 
 

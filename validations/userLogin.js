@@ -15,41 +15,13 @@ module.exports = {
         bail: true,
     },
     isEmail: {
-        errorMessage: "Not a valid email.",
-        bail: true,
-    },
-    custom: {
-        options: async (value) => {
-            const isRegistered = await prisma.user.findFirst({
-                where: {
-                    email: value
-                }
-            })
-            
-            if(!isRegistered){
-                throw new Error(`Incorrect email.`)
-            }
-            return true
-        }
-    },
-  },
+        errorMessage: "Not a valid email."
+    }},
   password: {
     in: ["body"],
     isLength: {
       options: { min: 8 },
       errorMessage: "Password missing.",
     }
-  },
-  name: {
-    in: ["body"],
-    isLength: {
-        options: { min: 1 },
-        errorMessage: "Name missing.",
-        bail: true,
-    },
-    isString: {
-        errorMessage: "Name must be a string.",
-        bail: true
-    }
-  },
+  }
 };
